@@ -1,0 +1,44 @@
+.job-form {
+    padding: 2rem;
+    margin-bottom: 3rem;
+}
+
+.form-title {
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    background: linear-gradient(to right, #fff, #94a3b8);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.submit-btn {
+    margin-top: 2rem;
+    width: 100%;
+    padding: 1rem;
+    background: var(--primary);
+    color: white;
+    font-size: 1rem;
+    box-shadow: 0 4px 14px 0 rgba(99, 102, 241, 0.39);
+}
+
+.submit-btn:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
+}
+
+.submit-btn:active {
+    transform: translateY(0);
+}

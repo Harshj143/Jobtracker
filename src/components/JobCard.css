@@ -1,0 +1,69 @@
+.job-card-summary {
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.job-card-summary:hover {
+    transform: translateX(4px);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.card-main-info h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.2rem;
+}
+
+.applied-date-small {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.card-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.status-pill-select {
+    padding: 0.25rem 0.5rem;
+    border-radius: 20px;
+    border: 1px solid;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    background: transparent;
+    cursor: pointer;
+    outline: none;
+}
+
+.status-pill-select option {
+    background: #1e293b;
+    color: white;
+}
+
+.arrow {
+    font-size: 1.5rem;
+    color: var(--text-muted);
+}
+
+.card-reminder-dot {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 8px;
+    height: 8px;
+    background: #f59e0b;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #f59e0b;
+}
+
+.ghosted-card {
+    opacity: 0.6;
+}
