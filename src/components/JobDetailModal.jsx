@@ -4,9 +4,23 @@ import './JobDetailModal.css';
 const JobDetailModal = ({ job, onClose, onUpdateStatus, onMarkEmailed, onToggleResponse, onDelete, onUpdateJob }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editData, setEditData] = useState({ ...job });
+    const [currentEmail, setCurrentEmail] = useState('');
+    const [currentLinkedin, setCurrentLinkedin] = useState('');
 
     useEffect(() => {
-        setEditData({ ...job });
+        // Ensure email/linkedin are arrays even if they come as strings (legacy data)
+        const emails = Array.isArray(job.recruiterEmails)
+            ? job.recruiterEmails
+            : (job.recruiterEmail ? [job.recruiterEmail] : []);
+        const linkedins = Array.isArray(job.recruiterLinkedins)
+            ? job.recruiterLinkedins
+            : (job.recruiterLinkedin ? [job.recruiterLinkedin] : []);
+
+        setEditData({
+            ...job,
+            recruiterEmails: emails,
+            recruiterLinkedins: linkedins
+        });
     }, [job]);
 
     if (!job) return null;
@@ -22,10 +36,61 @@ const JobDetailModal = ({ job, onClose, onUpdateStatus, onMarkEmailed, onToggleR
         }
     };
 
-    const handleSave = () => {
-        onUpdateJob(job.id, editData);
-        setIsEditing(false);
+    const handleAddEmail = () => {
+        if (currentEmail && !editData.recruiterEmails.includes(currentEmail)) {
+            setEditData({
+                ...editData,
+                recruiterEmails: [...editData.recruiterEmails, currentEmail]
+            });
+            setCurrentEmail('');
+        }
     };
+
+    const handleAddLinkedin = () => {
+        if (currentLinkedin && !editData.recruiterLinkedins.includes(currentLinkedin)) {
+            setEditData({
+                ...editData,
+                recruiterLinkedins: [...editData.recruiterLinkedins, currentLinkedin]
+            });
+            setCurrentLinkedin('');
+        }
+    };
+
+    const handleRemoveEmail = (email) => {
+        setEditData({
+            ...editData,
+            recruiterEmails: editData.recruiterEmails.filter(e => e !== email)
+        });
+    };
+
+    const handleRemoveLinkedin = (linkedin) => {
+        setEditData({
+            ...editData,
+            recruiterLinkedins: editData.recruiterLinkedins.filter(l => l !== linkedin)
+        });
+    };
+
+    const handleSave = () => {
+        // Add any remaining text in the inputs
+        let finalEmails = [...editData.recruiterEmails];
+        if (currentEmail && !finalEmails.includes(currentEmail)) finalEmails.push(currentEmail);
+
+        let finalLinkedins = [...editData.recruiterLinkedins];
+        if (currentLinkedin && !finalLinkedins.includes(currentLinkedin)) finalLinkedins.push(currentLinkedin);
+
+        onUpdateJob(job.id, {
+            ...editData,
+            recruiterEmails: finalEmails,
+            recruiterLinkedins: finalLinkedins
+        });
+        setIsEditing(false);
+        setCurrentEmail('');
+        setCurrentLinkedin('');
+    };
+
+    // Helper to get emails from job (legacy and new)
+    const displayEmails = Array.isArray(job.recruiterEmails) ? job.recruiterEmails : (job.recruiterEmail ? [job.recruiterEmail] : []);
+    const displayLinkedins = Array.isArray(job.recruiterLinkedins) ? job.recruiterLinkedins : (job.recruiterLinkedin ? [job.recruiterLinkedin] : []);
 
     return (
         <div className="modal-overlay" onClick={onClose}>
@@ -87,20 +152,76 @@ const JobDetailModal = ({ job, onClose, onUpdateStatus, onMarkEmailed, onToggleR
                     <div className="info-section">
                         <label>Recruiter & Follow-up</label>
                         <div className="info-grid">
-                            <div className="info-item">
+                            <div className="info-item full-width">
                                 <span className="info-label">Recruiter Name:</span>
                                 {isEditing ? (
-                                    <input value={editData.recruiterName} onChange={e => setEditData({ ...editData, recruiterName: e.target.value })} />
+                                    <input value={editData.recruiterName || ''} onChange={e => setEditData({ ...editData, recruiterName: e.target.value })} />
                                 ) : (
                                     <span className="info-value">{job.recruiterName || 'None'}</span>
                                 )}
                             </div>
-                            <div className="info-item">
-                                <span className="info-label">Recruiter Email:</span>
+
+                            <div className="info-item full-width">
+                                <span className="info-label">Recruiter Emails:</span>
                                 {isEditing ? (
-                                    <input value={editData.recruiterEmail} onChange={e => setEditData({ ...editData, recruiterEmail: e.target.value })} />
+                                    <>
+                                        <div className="multi-input-container">
+                                            <input
+                                                type="email"
+                                                placeholder="Add email..."
+                                                value={currentEmail}
+                                                onChange={e => setCurrentEmail(e.target.value)}
+                                                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddEmail())}
+                                            />
+                                            <button type="button" onClick={handleAddEmail} className="add-input-btn">Add</button>
+                                        </div>
+                                        <div className="contact-tags">
+                                            {editData.recruiterEmails.map(email => (
+                                                <span key={email} className="contact-tag">
+                                                    {email}
+                                                    <button type="button" onClick={() => handleRemoveEmail(email)}>×</button>
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </>
                                 ) : (
-                                    <span className="info-value">{job.recruiterEmail || 'None'}</span>
+                                    <div className="contact-list">
+                                        {displayEmails.length > 0 ? displayEmails.map(email => (
+                                            <a key={email} href={`mailto:${email}`} className="modal-link contact-item">{email}</a>
+                                        )) : <span className="muted">None</span>}
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="info-item full-width">
+                                <span className="info-label">Recruiter LinkedIn:</span>
+                                {isEditing ? (
+                                    <>
+                                        <div className="multi-input-container">
+                                            <input
+                                                type="url"
+                                                placeholder="Add LinkedIn link..."
+                                                value={currentLinkedin}
+                                                onChange={e => setCurrentLinkedin(e.target.value)}
+                                                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddLinkedin())}
+                                            />
+                                            <button type="button" onClick={handleAddLinkedin} className="add-input-btn">Add</button>
+                                        </div>
+                                        <div className="contact-tags">
+                                            {editData.recruiterLinkedins.map(link => (
+                                                <span key={link} className="contact-tag">
+                                                    {link.length > 20 ? link.split('/').pop() || link : link}
+                                                    <button type="button" onClick={() => handleRemoveLinkedin(link)}>×</button>
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className="contact-list">
+                                        {displayLinkedins.length > 0 ? displayLinkedins.map(link => (
+                                            <a key={link} href={link} target="_blank" rel="noopener noreferrer" className="modal-link contact-item">LinkedIn Profile 🔗</a>
+                                        )) : <span className="muted">None</span>}
+                                    </div>
                                 )}
                             </div>
                         </div>

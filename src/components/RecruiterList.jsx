@@ -7,15 +7,23 @@ const RecruiterList = ({ jobs, manualRecruiters, onAddManualRecruiter }) => {
 
     // Merge recruiters from jobs and manual list
     const recruitersFromJobs = jobs
-        .filter(job => job.recruiterName || job.recruiterEmail || job.recruiterLinkedin)
-        .map(job => ({
-            name: job.recruiterName,
-            email: job.recruiterEmail,
-            linkedin: job.recruiterLinkedin,
-            company: job.company,
-            id: `job-${job.id}`,
-            source: 'application'
-        }));
+        .filter(job => job.recruiterName || job.recruiterEmails?.length > 0 || job.recruiterLinkedins?.length > 0 || job.recruiterEmail || job.recruiterLinkedin)
+        .map(job => {
+            const emails = Array.isArray(job.recruiterEmails) ? job.recruiterEmails : (job.recruiterEmail ? [job.recruiterEmail] : []);
+            const linkedins = Array.isArray(job.recruiterLinkedins) ? job.recruiterLinkedins : (job.recruiterLinkedin ? [job.recruiterLinkedin] : []);
+
+            return {
+                name: job.recruiterName,
+                emails: emails,
+                linkedins: linkedins,
+                // Keep for legacy display/compatibility
+                email: emails[0] || '',
+                linkedin: linkedins[0] || '',
+                company: job.company,
+                id: `job-${job.id}`,
+                source: 'application'
+            };
+        });
 
     const rawRecruiters = [...manualRecruiters.map(r => ({ ...r, source: 'manual' })), ...recruitersFromJobs];
 
@@ -124,23 +132,39 @@ const RecruiterList = ({ jobs, manualRecruiters, onAddManualRecruiter }) => {
                             </div>
 
                             <div className="rec-actions">
-                                {rec.email && (
+                                {rec.emails && rec.emails.length > 0 ? rec.emails.map((email, i) => (
+                                    <div className="action-row" key={`${email}-${i}`}>
+                                        <span className="email-text">{email}</span>
+                                        <button className="copy-icon-btn" onClick={() => copyToClipboard(email, 'email')}>📋</button>
+                                    </div>
+                                )) : rec.email && (
                                     <div className="action-row">
                                         <span className="email-text">{rec.email}</span>
                                         <button className="copy-icon-btn" onClick={() => copyToClipboard(rec.email, 'email')}>📋</button>
                                     </div>
                                 )}
-                                <div className="action-row">
-                                    <span className="linkedin-text">{rec.linkedin ? 'LinkedIn Profile' : 'No LinkedIn Profile'}</span>
-                                    <div className="rec-link-group">
-                                        {rec.linkedin && (
-                                            <a href={rec.linkedin} target="_blank" rel="noopener noreferrer" className="nav-link-btn">🔗 View</a>
-                                        )}
-                                        {rec.linkedin && (
-                                            <button className="copy-icon-btn" onClick={() => copyToClipboard(rec.linkedin, 'LinkedIn')}>📋</button>
-                                        )}
+
+                                {rec.linkedins && rec.linkedins.length > 0 ? rec.linkedins.map((link, i) => (
+                                    <div className="action-row" key={`${link}-${i}`}>
+                                        <span className="linkedin-text">LinkedIn Profile {rec.linkedins.length > 1 ? i + 1 : ''}</span>
+                                        <div className="rec-link-group">
+                                            <a href={link} target="_blank" rel="noopener noreferrer" className="nav-link-btn">🔗 View</a>
+                                            <button className="copy-icon-btn" onClick={() => copyToClipboard(link, 'LinkedIn')}>📋</button>
+                                        </div>
                                     </div>
-                                </div>
+                                )) : (
+                                    <div className="action-row">
+                                        <span className="linkedin-text">{rec.linkedin ? 'LinkedIn Profile' : 'No LinkedIn Profile'}</span>
+                                        <div className="rec-link-group">
+                                            {rec.linkedin && (
+                                                <a href={rec.linkedin} target="_blank" rel="noopener noreferrer" className="nav-link-btn">🔗 View</a>
+                                            )}
+                                            {rec.linkedin && (
+                                                <button className="copy-icon-btn" onClick={() => copyToClipboard(rec.linkedin, 'LinkedIn')}>📋</button>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     ))
