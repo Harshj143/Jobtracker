@@ -129,7 +129,7 @@ const Settings = ({ onImportData, onExportData, supabaseConfig, onUpdateSupabase
                 </div>
                 <button className="settings-btn" onClick={handleConfigSave}>Save Configuration</button>
 
-                {supabase && (
+                {supabase ? (
                     <div className="auth-section">
                         <hr className="divider" />
                         {user ? (
@@ -172,9 +172,12 @@ const Settings = ({ onImportData, onExportData, supabaseConfig, onUpdateSupabase
                                     </button>
                                 </div>
                             </form>
-                        ) || (
-                            <p className="status-msg warning">Configure Supabase and save to enable login.</p>
                         )}
+                    </div>
+                ) : (
+                    <div className="auth-section">
+                        <hr className="divider" />
+                        <p className="status-msg warning">Configure Supabase URL and Key above to enable cloud sync.</p>
                     </div>
                 )}
             </section>
