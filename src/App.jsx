@@ -6,6 +6,8 @@ import RecruiterList from './components/RecruiterList';
 import JobDetailModal from './components/JobDetailModal';
 import CompanyHub from './components/CompanyHub';
 import QuickLinks from './components/QuickLinks';
+import Settings from './components/Settings';
+import { supabase } from './supabaseClient';
 import './index.css';
 
 function App() {
@@ -29,10 +31,71 @@ function App() {
     return savedLinks ? JSON.parse(savedLinks) : [];
   });
 
+  const [supabaseConfig, setSupabaseConfig] = useState(() => {
+    const saved = localStorage.getItem('jobTracker_supabaseConfig');
+    return saved ? JSON.parse(saved) : { url: '', anonKey: '' };
+  });
+
   const [currentView, setCurrentView] = useState('dashboard');
   const [statusFilter, setStatusFilter] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedJob, setSelectedJob] = useState(null);
+  const [user, setUser] = useState(null);
+
+  // Sync with Supabase on Auth or Data change
+  useEffect(() => {
+    if (supabase) {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        setUser(session?.user ?? null);
+      });
+
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        setUser(session?.user ?? null);
+      });
+
+      return () => subscription.unsubscribe();
+    }
+  }, []);
+
+  // Fetch initial data from Supabase
+  useEffect(() => {
+    const fetchCloudData = async () => {
+      if (user && supabase) {
+        const { data, error } = await supabase
+          .from('user_sync')
+          .select('payload')
+          .eq('user_id', user.id)
+          .single();
+
+        if (data && data.payload) {
+          handleImportData(data.payload);
+        } else if (error && error.code !== 'PGRST116') { // PGRST116 is "not found"
+          console.error('Error fetching cloud data:', error);
+        }
+      }
+    };
+    fetchCloudData();
+  }, [user]);
+
+  // Push updates to Supabase (Debounced)
+  useEffect(() => {
+    const pushTimer = setTimeout(async () => {
+      if (user && supabase) {
+        const payload = { jobs, manualRecruiters, companies, quickLinks };
+        const { error } = await supabase
+          .from('user_sync')
+          .upsert({
+            user_id: user.id,
+            payload,
+            updated_at: new Date().toISOString()
+          });
+
+        if (error) console.error('Error pushing to cloud:', error);
+      }
+    }, 2000);
+
+    return () => clearTimeout(pushTimer);
+  }, [jobs, manualRecruiters, companies, quickLinks, user]);
 
   // Auto-Ghosting (30 days) and Save
   useEffect(() => {
@@ -68,6 +131,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem('jobTracker_quickLinks', JSON.stringify(quickLinks));
   }, [quickLinks]);
+
+  useEffect(() => {
+    localStorage.setItem('jobTracker_supabaseConfig', JSON.stringify(supabaseConfig));
+  }, [supabaseConfig]);
 
   const addJob = (job) => {
     const newJob = {
@@ -133,6 +200,48 @@ function App() {
 
   const deleteQuickLink = (id) => {
     setQuickLinks(quickLinks.filter(l => l.id !== id));
+  };
+
+  const handleExportData = () => {
+    const backupData = {
+      jobs,
+      manualRecruiters,
+      companies,
+      quickLinks,
+      version: '1.2'
+    };
+    const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `job-tracker-backup-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleImportData = (data) => {
+    if (!data) return;
+
+    // Duplicate detection helper
+    const mergeUnique = (existing, incoming, keyFn) => {
+      const existingKeys = new Set(existing.map(keyFn));
+      const filteredIncoming = incoming.filter(item => !existingKeys.has(keyFn(item)));
+      return [...filteredIncoming, ...existing]; // Keep incoming at top if desired
+    };
+
+    if (data.jobs) {
+      setJobs(prev => mergeUnique(prev, data.jobs, j => `${j.company}-${j.role}`));
+    }
+    if (data.manualRecruiters) {
+      setManualRecruiters(prev => mergeUnique(prev, data.manualRecruiters, r => `${r.name}-${r.email}`));
+    }
+    if (data.companies) {
+      setCompanies(prev => mergeUnique(prev, data.companies, c => c.name));
+    }
+    if (data.quickLinks) {
+      setQuickLinks(prev => mergeUnique(prev, data.quickLinks, q => q.url));
+    }
   };
 
 
@@ -284,6 +393,15 @@ function App() {
               quickLinks={quickLinks}
               onAddQuickLink={addQuickLink}
               onDeleteQuickLink={deleteQuickLink}
+            />
+          )}
+
+          {currentView === 'settings' && (
+            <Settings
+              onExportData={handleExportData}
+              onImportData={handleImportData}
+              supabaseConfig={supabaseConfig}
+              onUpdateSupabaseConfig={setSupabaseConfig}
             />
           )}
 
