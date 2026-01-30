@@ -49,6 +49,14 @@ const Sidebar = ({ currentView, setCurrentView, jobsCount, followUpCount }) => {
                     <span className="icon">👤</span>
                     Recruiters
                 </button>
+
+                <button
+                    className={`nav-item ${currentView === 'quicklinks' ? 'active' : ''}`}
+                    onClick={() => setCurrentView('quicklinks')}
+                >
+                    <span className="icon">🔖</span>
+                    Apply Later
+                </button>
             </nav>
 
             <div className="sidebar-footer">

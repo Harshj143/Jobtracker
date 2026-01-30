@@ -5,6 +5,7 @@ import Sidebar from './components/Sidebar';
 import RecruiterList from './components/RecruiterList';
 import JobDetailModal from './components/JobDetailModal';
 import CompanyHub from './components/CompanyHub';
+import QuickLinks from './components/QuickLinks';
 import './index.css';
 
 function App() {
@@ -21,6 +22,11 @@ function App() {
   const [companies, setCompanies] = useState(() => {
     const savedCos = localStorage.getItem('jobTracker_companies');
     return savedCos ? JSON.parse(savedCos) : [];
+  });
+
+  const [quickLinks, setQuickLinks] = useState(() => {
+    const savedLinks = localStorage.getItem('jobTracker_quickLinks');
+    return savedLinks ? JSON.parse(savedLinks) : [];
   });
 
   const [currentView, setCurrentView] = useState('dashboard');
@@ -58,6 +64,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem('jobTracker_companies', JSON.stringify(companies));
   }, [companies]);
+
+  useEffect(() => {
+    localStorage.setItem('jobTracker_quickLinks', JSON.stringify(quickLinks));
+  }, [quickLinks]);
 
   const addJob = (job) => {
     const newJob = {
@@ -115,6 +125,14 @@ function App() {
 
   const deleteCompany = (id) => {
     setCompanies(companies.filter(c => c.id !== id));
+  };
+
+  const addQuickLink = (link) => {
+    setQuickLinks([link, ...quickLinks]);
+  };
+
+  const deleteQuickLink = (id) => {
+    setQuickLinks(quickLinks.filter(l => l.id !== id));
   };
 
 
@@ -258,6 +276,14 @@ function App() {
               jobs={jobs}
               manualRecruiters={manualRecruiters}
               onAddManualRecruiter={addManualRecruiter}
+            />
+          )}
+
+          {currentView === 'quicklinks' && (
+            <QuickLinks
+              quickLinks={quickLinks}
+              onAddQuickLink={addQuickLink}
+              onDeleteQuickLink={deleteQuickLink}
             />
           )}
 

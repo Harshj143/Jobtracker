@@ -1,0 +1,119 @@
+.quick-links-page {
+    padding-bottom: 2rem;
+}
+
+.quick-links-form {
+    padding: 2rem;
+    margin-bottom: 3rem;
+}
+
+.form-row {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-end;
+}
+
+.add-link-btn {
+    padding: 0.85rem 2rem;
+    background: var(--primary);
+    color: white;
+    height: 48px;
+    align-self: flex-end;
+}
+
+.add-link-btn:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+}
+
+.links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.link-card {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.link-card:hover {
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.link-content h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: #fff;
+    word-break: break-word;
+}
+
+.link-url {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    word-break: break-all;
+    margin-bottom: 1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.date-added {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    opacity: 0.6;
+}
+
+.link-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 0.75rem;
+}
+
+.action-btn {
+    flex: 1;
+    padding: 0.6rem;
+    font-size: 0.85rem;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.open-btn {
+    background: rgba(99, 102, 241, 0.15);
+    color: var(--primary);
+}
+
+.copy-btn {
+    background: rgba(255, 255, 255, 0.05);
+    color: #cbd5e1;
+}
+
+.delete-btn {
+    padding: 0.6rem;
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.delete-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .add-link-btn {
+        width: 100%;
+    }
+}
