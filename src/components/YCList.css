@@ -1,0 +1,154 @@
+.yc-table-container {
+    overflow-x: auto;
+    margin-top: 1.5rem;
+    border-radius: 12px;
+}
+
+.yc-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.9rem;
+}
+
+.yc-table th {
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.yc-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--glass-border);
+    color: #e2e8f0;
+}
+
+.yc-table tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.row-contacted {
+    background: rgba(16, 185, 129, 0.05) !important;
+}
+
+.company-name {
+    font-weight: 600;
+    color: white;
+}
+
+.batch-tag {
+    background: rgba(99, 102, 241, 0.15);
+    color: var(--primary);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.email-link,
+.web-link {
+    color: var(--primary);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.email-link:hover,
+.web-link:hover {
+    color: var(--primary-hover);
+    text-decoration: underline;
+}
+
+.status-pill {
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.status-pill.active {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+}
+
+.status-pill.acquired {
+    background: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
+}
+
+.contact-btn {
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    color: #e2e8f0;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.contact-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.contact-btn.active {
+    background: #10b981;
+    color: white;
+    border-color: #10b981;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+.pagination button {
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.pagination button:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+}
+
+.pagination button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.page-info {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.empty-row {
+    text-align: center;
+    padding: 3rem !important;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+@media (max-width: 768px) {
+    .yc-controls {
+        flex-direction: column;
+    }
+}

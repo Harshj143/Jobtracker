@@ -7,7 +7,7 @@ import JobDetailModal from './components/JobDetailModal';
 import CompanyHub from './components/CompanyHub';
 import QuickLinks from './components/QuickLinks';
 import Settings from './components/Settings';
-import StartupHub from './components/StartupHub';
+import YCList from './components/YCList';
 import { supabase } from './supabaseClient';
 import './index.css';
 
@@ -32,8 +32,8 @@ function App() {
     return savedLinks ? JSON.parse(savedLinks) : [];
   });
 
-  const [sentEmails, setSentEmails] = useState(() => {
-    const saved = localStorage.getItem('jobTracker_sentEmails');
+  const [contactedYCIds, setContactedYCIds] = useState(() => {
+    const saved = localStorage.getItem('jobTracker_contactedYC');
     return saved ? JSON.parse(saved) : [];
   });
 
@@ -41,7 +41,7 @@ function App() {
     const saved = localStorage.getItem('jobTracker_supabaseConfig');
     return saved ? JSON.parse(saved) : { url: '', anonKey: '' };
   });
-
+  // ... around line 35
   const [currentView, setCurrentView] = useState('dashboard');
   const [statusFilter, setStatusFilter] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
@@ -87,7 +87,7 @@ function App() {
   useEffect(() => {
     const pushTimer = setTimeout(async () => {
       if (user && supabase) {
-        const payload = { jobs, manualRecruiters, companies, quickLinks, sentEmails };
+        const payload = { jobs, manualRecruiters, companies, quickLinks, contactedYCIds };
         const { error } = await supabase
           .from('user_sync')
           .upsert({
@@ -101,7 +101,7 @@ function App() {
     }, 2000);
 
     return () => clearTimeout(pushTimer);
-  }, [jobs, manualRecruiters, companies, quickLinks, sentEmails, user]);
+  }, [jobs, manualRecruiters, companies, quickLinks, contactedYCIds, user]);
 
   // Auto-Ghosting (30 days) and Save
   useEffect(() => {
@@ -139,8 +139,8 @@ function App() {
   }, [quickLinks]);
 
   useEffect(() => {
-    localStorage.setItem('jobTracker_sentEmails', JSON.stringify(sentEmails));
-  }, [sentEmails]);
+    localStorage.setItem('jobTracker_contactedYC', JSON.stringify(contactedYCIds));
+  }, [contactedYCIds]);
 
   useEffect(() => {
     localStorage.setItem('jobTracker_supabaseConfig', JSON.stringify(supabaseConfig));
@@ -212,9 +212,9 @@ function App() {
     setQuickLinks(quickLinks.filter(l => l.id !== id));
   };
 
-  const toggleSentEmail = (id) => {
-    setSentEmails(prev =>
-      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+  const toggleYCContacted = (id) => {
+    setContactedYCIds(prev =>
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
     );
   };
 
@@ -224,7 +224,7 @@ function App() {
       manualRecruiters,
       companies,
       quickLinks,
-      sentEmails,
+      contactedYCIds,
       version: '1.3'
     };
     const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
@@ -259,8 +259,8 @@ function App() {
     if (data.quickLinks) {
       setQuickLinks(prev => mergeUnique(prev, data.quickLinks, q => q.url));
     }
-    if (data.sentEmails) {
-      setSentEmails(prev => Array.from(new Set([...prev, ...data.sentEmails])));
+    if (data.contactedYCIds) {
+      setContactedYCIds(prev => Array.from(new Set([...prev, ...data.contactedYCIds])));
     }
   };
 
@@ -416,10 +416,10 @@ function App() {
             />
           )}
 
-          {currentView === 'ychub' && (
-            <StartupHub
-              sentEmails={sentEmails}
-              onToggleSent={toggleSentEmail}
+          {currentView === 'yc-startups' && (
+            <YCList
+              contactedIds={contactedYCIds}
+              onToggleContacted={toggleYCContacted}
             />
           )}
 
