@@ -5,19 +5,35 @@ import './StartupHub.css';
 const StartupHub = ({ sentEmails, onToggleSent }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [batchFilter, setBatchFilter] = useState('All');
+    const [visibleItems, setVisibleItems] = useState(50);
 
     const filteredStartups = useMemo(() => {
+        if (!startupsData || !Array.isArray(startupsData)) return [];
         return startupsData.filter(item => {
+            if (!item) return false;
+
+            const company = (item.company || '').toLowerCase();
+            const fullName = (item.fullName || '').toLowerCase();
+            const email = (item.email || '').toLowerCase();
+            const search = searchTerm.toLowerCase();
+
             const matchesSearch =
-                item.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                item.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                (item.email && item.email.toLowerCase().includes(searchTerm.toLowerCase()));
+                company.includes(search) ||
+                fullName.includes(search) ||
+                (email && email !== 'tbd' && email.includes(search));
 
             const matchesBatch = batchFilter === 'All' || item.batch === batchFilter;
 
             return matchesSearch && matchesBatch;
         });
     }, [searchTerm, batchFilter]);
+
+    // Reset visibility when filters change
+    useMemo(() => {
+        setVisibleItems(50);
+    }, [searchTerm, batchFilter]);
+
+    const displayedStartups = filteredStartups.slice(0, visibleItems);
 
     const batches = useMemo(() => {
         const set = new Set(startupsData.map(s => s.batch).filter(Boolean));
@@ -40,7 +56,7 @@ const StartupHub = ({ sentEmails, onToggleSent }) => {
         <div className="startup-hub">
             <header className="page-header">
                 <h1>YC <span className="highlight">Startup Hub</span></h1>
-                <p className="subtitle">Outreach to {startupsData.length} YC founders</p>
+                <p className="subtitle">Showing {Math.min(visibleItems, filteredStartups.length)} of {filteredStartups.length} founders</p>
             </header>
 
             <div className="hub-controls glass-panel">
@@ -74,7 +90,7 @@ const StartupHub = ({ sentEmails, onToggleSent }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredStartups.map(startup => (
+                        {displayedStartups.map(startup => (
                             <tr key={startup.id} className={sentEmails.includes(startup.id) ? 'sent-row' : ''}>
                                 <td className="status-cell">
                                     <button
@@ -131,6 +147,16 @@ const StartupHub = ({ sentEmails, onToggleSent }) => {
                 </table>
                 {filteredStartups.length === 0 && (
                     <div className="empty-state">No startups found matching your filters.</div>
+                )}
+                {visibleItems < filteredStartups.length && (
+                    <div className="load-more-container">
+                        <button
+                            className="load-more-btn"
+                            onClick={() => setVisibleItems(prev => prev + 100)}
+                        >
+                            Load More Startups
+                        </button>
+                    </div>
                 )}
             </div>
         </div>

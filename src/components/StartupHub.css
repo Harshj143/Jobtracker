@@ -195,6 +195,30 @@
     color: var(--text-muted);
 }
 
+.load-more-container {
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.load-more-btn {
+    padding: 0.8rem 2rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    color: white;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.load-more-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+    border-color: var(--primary);
+}
+
 @media (max-width: 900px) {
     .hub-controls {
         flex-direction: column;
