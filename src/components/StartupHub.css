@@ -1,0 +1,203 @@
+.startup-hub {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.hub-controls {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    align-items: center;
+}
+
+.hub-controls .search-group {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    padding: 0.2rem 1rem;
+}
+
+.hub-controls .search-group .icon {
+    margin-right: 0.8rem;
+    opacity: 0.5;
+}
+
+.hub-controls .search-group input {
+    background: transparent;
+    border: none;
+    color: white;
+    padding: 0.6rem 0;
+    width: 100%;
+}
+
+.hub-controls .search-group input:focus {
+    outline: none;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.filter-group select {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    color: white;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.hub-table-container {
+    overflow-x: auto;
+    border-radius: 12px;
+}
+
+.hub-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.hub-table th {
+    padding: 1.2rem 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.hub-table td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    vertical-align: middle;
+}
+
+.hub-table tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.sent-row {
+    background: rgba(16, 185, 129, 0.03) !important;
+}
+
+.sent-toggle {
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-muted);
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.sent-toggle.active {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.company-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.company-name {
+    font-weight: 700;
+    color: white;
+}
+
+.site-link {
+    font-size: 0.7rem;
+    color: var(--primary);
+    text-decoration: none;
+    opacity: 0.7;
+}
+
+.site-link:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
+
+.batch-tag {
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--primary);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.email-copy-wrapper {
+    position: relative;
+}
+
+.copy-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    color: var(--text-muted);
+    padding: 0.5rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.copy-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.mail-btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: var(--primary);
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.mail-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.tbd {
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: 0.85rem;
+}
+
+.empty-state {
+    padding: 3rem;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+@media (max-width: 900px) {
+    .hub-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}

@@ -59,6 +59,14 @@ const Sidebar = ({ currentView, setCurrentView, jobsCount, followUpCount }) => {
                 </button>
 
                 <button
+                    className={`nav-item ${currentView === 'ychub' ? 'active' : ''}`}
+                    onClick={() => setCurrentView('ychub')}
+                >
+                    <span className="icon">🚀</span>
+                    YC Hub
+                </button>
+
+                <button
                     className={`nav-item ${currentView === 'settings' ? 'active' : ''}`}
                     onClick={() => setCurrentView('settings')}
                 >

@@ -7,6 +7,7 @@ import JobDetailModal from './components/JobDetailModal';
 import CompanyHub from './components/CompanyHub';
 import QuickLinks from './components/QuickLinks';
 import Settings from './components/Settings';
+import StartupHub from './components/StartupHub';
 import { supabase } from './supabaseClient';
 import './index.css';
 
@@ -29,6 +30,11 @@ function App() {
   const [quickLinks, setQuickLinks] = useState(() => {
     const savedLinks = localStorage.getItem('jobTracker_quickLinks');
     return savedLinks ? JSON.parse(savedLinks) : [];
+  });
+
+  const [sentEmails, setSentEmails] = useState(() => {
+    const saved = localStorage.getItem('jobTracker_sentEmails');
+    return saved ? JSON.parse(saved) : [];
   });
 
   const [supabaseConfig, setSupabaseConfig] = useState(() => {
@@ -81,7 +87,7 @@ function App() {
   useEffect(() => {
     const pushTimer = setTimeout(async () => {
       if (user && supabase) {
-        const payload = { jobs, manualRecruiters, companies, quickLinks };
+        const payload = { jobs, manualRecruiters, companies, quickLinks, sentEmails };
         const { error } = await supabase
           .from('user_sync')
           .upsert({
@@ -95,7 +101,7 @@ function App() {
     }, 2000);
 
     return () => clearTimeout(pushTimer);
-  }, [jobs, manualRecruiters, companies, quickLinks, user]);
+  }, [jobs, manualRecruiters, companies, quickLinks, sentEmails, user]);
 
   // Auto-Ghosting (30 days) and Save
   useEffect(() => {
@@ -131,6 +137,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem('jobTracker_quickLinks', JSON.stringify(quickLinks));
   }, [quickLinks]);
+
+  useEffect(() => {
+    localStorage.setItem('jobTracker_sentEmails', JSON.stringify(sentEmails));
+  }, [sentEmails]);
 
   useEffect(() => {
     localStorage.setItem('jobTracker_supabaseConfig', JSON.stringify(supabaseConfig));
@@ -202,13 +212,20 @@ function App() {
     setQuickLinks(quickLinks.filter(l => l.id !== id));
   };
 
+  const toggleSentEmail = (id) => {
+    setSentEmails(prev =>
+      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+    );
+  };
+
   const handleExportData = () => {
     const backupData = {
       jobs,
       manualRecruiters,
       companies,
       quickLinks,
-      version: '1.2'
+      sentEmails,
+      version: '1.3'
     };
     const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -241,6 +258,9 @@ function App() {
     }
     if (data.quickLinks) {
       setQuickLinks(prev => mergeUnique(prev, data.quickLinks, q => q.url));
+    }
+    if (data.sentEmails) {
+      setSentEmails(prev => Array.from(new Set([...prev, ...data.sentEmails])));
     }
   };
 
@@ -393,6 +413,13 @@ function App() {
               quickLinks={quickLinks}
               onAddQuickLink={addQuickLink}
               onDeleteQuickLink={deleteQuickLink}
+            />
+          )}
+
+          {currentView === 'ychub' && (
+            <StartupHub
+              sentEmails={sentEmails}
+              onToggleSent={toggleSentEmail}
             />
           )}
 
