@@ -51,19 +51,11 @@ const Sidebar = ({ currentView, setCurrentView, jobsCount, followUpCount }) => {
                 </button>
 
                 <button
-                    className={`nav-item ${currentView === 'quicklinks' ? 'active' : ''}`}
-                    onClick={() => setCurrentView('quicklinks')}
-                >
-                    <span className="icon">🔖</span>
-                    Apply Later
-                </button>
-
-                <button
                     className={`nav-item ${currentView === 'yc-startups' ? 'active' : ''}`}
                     onClick={() => setCurrentView('yc-startups')}
                 >
                     <span className="icon">🚀</span>
-                    YC Startups
+                    YC Hub
                 </button>
 
                 <button
@@ -76,7 +68,7 @@ const Sidebar = ({ currentView, setCurrentView, jobsCount, followUpCount }) => {
             </nav>
 
             <div className="sidebar-footer">
-                <p>Job Tracker v1.2</p>
+                <p>Job Tracker v1.4</p>
             </div>
         </aside>
     );

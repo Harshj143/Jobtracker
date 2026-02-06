@@ -1,39 +1,28 @@
-# 💼 Job Hunt Tracker
+# CareerFlow - Job Tracker 🚀
 
-A premium, glassmorphism-inspired job application tracker built with React. Track your jobs, recruiters, and companies with ease, all synced to the cloud.
+A premium, modern job application tracker designed to streamline your career hunt. Built with React + Vite, featuring a sleek glassmorphism UI and powerful organization tools.
 
-## 🚀 Features
-- **Modern Dashboard**: High-level stats of your application progress.
-- **Smart Follow-ups**: Automatically highlights jobs you haven't heard back from in 4+ days.
-- **Ghosting Detection**: Auto-tags applications as "Ghosted" after 30 days of inactivity.
-- **Company & Recruiter Hubs**: Dedicated spaces to manage your network.
-- **Cloud Sync**: Powered by Supabase for cross-device data persistence.
-- **Manual Backup**: Export/Import your data as JSON anytime.
+### ✨ Features
+- **Job Tracker**: Log and monitor all your job applications with auto-ghosting detection.
+- **YC Startup Hub**: Browse thousands of YC startups, copy founder emails, and track initial/follow-up outreach.
+- **Company Tracking**: Build a targeted list of your dream companies.
+- **Recruiter Vault**: Store contact details for recruiters and hiring managers.
+- **Apply Later**: Bookmark interesting job links to apply to when you're ready.
+- **Cloud Sync (Supabase)**: Real-time data synchronization across all devices.
+- **Manual Backups**: Reliable JSON import/export for full data control.
+- **Modern UI**: Dark mode with glassmorphism effects and optimized mobile experience.
 
-## 🛠️ Setup & Deployment
+### 🛠️ Tech Stack
+- **Frontend**: React, Vanilla CSS
+- **Backend & Sync**: Supabase (Auth + Database)
+- **Tooling**: Vite, npm
 
-### 1. Supabase Backend
-1. Create a project at [Supabase](https://supabase.com).
-2. Run this SQL in the **SQL Editor**:
-```sql
-create table user_sync (
-  user_id uuid references auth.users not null primary key,
-  payload jsonb not null,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
-);
-alter table user_sync enable row level security;
-create policy "Users can update their own sync data" 
-  on user_sync for all using (auth.uid() = user_id);
-```
-3. Disable **Email Confirmation** in `Authentication -> Providers -> Email` for instant access.
+### 🚀 Getting Started
+1. Clone the repository.
+2. Run `npm install` to install dependencies.
+3. Create a `.env` file based on `.env.example` and add your Supabase credentials.
+4. Run `npm run dev` to start the development server.
+5. Setup the `user_sync` table in Supabase (see Walkthrough for SQL).
 
-### 2. Vercel Environment Variables
-Add these to your project settings to enable automatic sync on all devices:
-- `VITE_SUPABASE_URL`: Your project API URL.
-- `VITE_SUPABASE_ANON_KEY`: Your project's `anon` public key.
-
-## 💻 Tech Stack
-- **Frontend**: React, Vite
-- **Styling**: Vanilla CSS (Custom Glassmorphism)
-- **Backend**: Supabase (Auth & Database)
-- **Deployment**: Vercel
+### 📱 Mobile Setup
+Access your deployed link or local IP on your phone. Go to **Settings** in the app, enter your Supabase URL/Key, and log in to sync your data instantly!

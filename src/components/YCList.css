@@ -1,154 +1,160 @@
-.yc-table-container {
-    overflow-x: auto;
-    margin-top: 1.5rem;
-    border-radius: 12px;
+.yc-hub {
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-.yc-table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: left;
-    font-size: 0.9rem;
+.startup-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
 }
 
-.yc-table th {
-    padding: 1rem;
-    background: rgba(255, 255, 255, 0.05);
+.startup-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    border: 1px solid var(--glass-border);
+}
+
+.startup-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.startup-card.emailed {
+    border-left: 4px solid var(--primary);
+}
+
+.startup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+}
+
+.startup-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #fff;
+}
+
+.batch-badge {
+    background: rgba(255, 255, 255, 0.1);
     color: var(--text-muted);
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 0.05em;
-    border-bottom: 1px solid var(--glass-border);
-}
-
-.yc-table td {
-    padding: 1rem;
-    border-bottom: 1px solid var(--glass-border);
-    color: #e2e8f0;
-}
-
-.yc-table tr:hover {
-    background: rgba(255, 255, 255, 0.02);
-}
-
-.row-contacted {
-    background: rgba(16, 185, 129, 0.05) !important;
-}
-
-.company-name {
-    font-weight: 600;
-    color: white;
-}
-
-.batch-tag {
-    background: rgba(99, 102, 241, 0.15);
-    color: var(--primary);
-    padding: 0.2rem 0.5rem;
+    padding: 0.2rem 0.6rem;
     border-radius: 4px;
     font-size: 0.75rem;
-    font-weight: 700;
+    font-weight: 600;
 }
 
-.email-link,
-.web-link {
+.contact-name {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.email-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+}
+
+.contact-email {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
     color: var(--primary);
+    word-break: break-all;
+    flex: 1;
+}
+
+.copy-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 2px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.copy-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.website-link {
+    display: inline-block;
+    color: var(--text-muted);
+    font-size: 0.85rem;
     text-decoration: none;
+    margin-bottom: 1.5rem;
     transition: color 0.2s;
 }
 
-.email-link:hover,
-.web-link:hover {
-    color: var(--primary-hover);
-    text-decoration: underline;
+.website-link:hover {
+    color: var(--primary);
 }
 
-.status-pill {
-    padding: 0.2rem 0.6rem;
-    border-radius: 20px;
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
+.startup-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-top: auto;
 }
 
-.status-pill.active {
-    background: rgba(16, 185, 129, 0.15);
-    color: #10b981;
-}
-
-.status-pill.acquired {
-    background: rgba(245, 158, 11, 0.15);
-    color: #f59e0b;
-}
-
-.contact-btn {
-    padding: 0.4rem 0.8rem;
+.action-btn {
+    padding: 0.6rem;
     border-radius: 6px;
     font-size: 0.8rem;
     font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--glass-border);
-    color: #e2e8f0;
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
+    color: var(--text-muted);
 }
 
-.contact-btn:hover {
+.action-btn:hover {
     background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
 }
 
-.contact-btn.active {
-    background: #10b981;
-    color: white;
-    border-color: #10b981;
+.action-btn.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
 }
 
-.pagination {
+.load-more-container {
     display: flex;
     justify-content: center;
-    align-items: center;
-    gap: 1.5rem;
-    margin-top: 2rem;
-    padding-bottom: 2rem;
+    margin: 3rem 0;
 }
 
-.pagination button {
-    padding: 0.6rem 1.2rem;
-    border-radius: 8px;
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    color: white;
-    cursor: pointer;
+.load-more-btn {
+    padding: 1rem 2rem;
+    font-size: 1rem;
     font-weight: 600;
-    transition: all 0.2s;
+    cursor: pointer;
+    border: 1px solid var(--glass-border);
+    color: var(--text-muted);
 }
 
-.pagination button:hover:not(:disabled) {
+.load-more-btn:hover {
     background: rgba(255, 255, 255, 0.1);
-    transform: translateY(-1px);
-}
-
-.pagination button:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
-
-.page-info {
-    color: var(--text-muted);
-    font-size: 0.9rem;
-}
-
-.empty-row {
-    text-align: center;
-    padding: 3rem !important;
-    color: var(--text-muted);
-    font-style: italic;
+    color: #fff;
+    border-color: var(--primary);
 }
 
 @media (max-width: 768px) {
-    .yc-controls {
-        flex-direction: column;
+    .startup-grid {
+        grid-template-columns: 1fr;
     }
 }

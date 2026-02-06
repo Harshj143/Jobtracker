@@ -32,9 +32,9 @@ function App() {
     return savedLinks ? JSON.parse(savedLinks) : [];
   });
 
-  const [contactedYCIds, setContactedYCIds] = useState(() => {
-    const saved = localStorage.getItem('jobTracker_contactedYC');
-    return saved ? JSON.parse(saved) : [];
+  const [ycStatuses, setYcStatuses] = useState(() => {
+    const saved = localStorage.getItem('jobTracker_ycStatuses');
+    return saved ? JSON.parse(saved) : {};
   });
 
   const [supabaseConfig, setSupabaseConfig] = useState(() => {
@@ -87,7 +87,7 @@ function App() {
   useEffect(() => {
     const pushTimer = setTimeout(async () => {
       if (user && supabase) {
-        const payload = { jobs, manualRecruiters, companies, quickLinks, contactedYCIds };
+        const payload = { jobs, manualRecruiters, companies, quickLinks, ycStatuses };
         const { error } = await supabase
           .from('user_sync')
           .upsert({
@@ -101,7 +101,7 @@ function App() {
     }, 2000);
 
     return () => clearTimeout(pushTimer);
-  }, [jobs, manualRecruiters, companies, quickLinks, contactedYCIds, user]);
+  }, [jobs, manualRecruiters, companies, quickLinks, ycStatuses, user]);
 
   // Auto-Ghosting (30 days) and Save
   useEffect(() => {
@@ -139,8 +139,8 @@ function App() {
   }, [quickLinks]);
 
   useEffect(() => {
-    localStorage.setItem('jobTracker_contactedYC', JSON.stringify(contactedYCIds));
-  }, [contactedYCIds]);
+    localStorage.setItem('jobTracker_ycStatuses', JSON.stringify(ycStatuses));
+  }, [ycStatuses]);
 
   useEffect(() => {
     localStorage.setItem('jobTracker_supabaseConfig', JSON.stringify(supabaseConfig));
@@ -212,10 +212,14 @@ function App() {
     setQuickLinks(quickLinks.filter(l => l.id !== id));
   };
 
-  const toggleYCContacted = (id) => {
-    setContactedYCIds(prev =>
-      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
-    );
+  const updateYcStatus = (id, type, value) => {
+    setYcStatuses(prev => ({
+      ...prev,
+      [id]: {
+        ...(prev[id] || { emailed: false, followup: false }),
+        [type]: value
+      }
+    }));
   };
 
   const handleExportData = () => {
@@ -224,8 +228,8 @@ function App() {
       manualRecruiters,
       companies,
       quickLinks,
-      contactedYCIds,
-      version: '1.3'
+      ycStatuses,
+      version: '1.4'
     };
     const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -259,8 +263,8 @@ function App() {
     if (data.quickLinks) {
       setQuickLinks(prev => mergeUnique(prev, data.quickLinks, q => q.url));
     }
-    if (data.contactedYCIds) {
-      setContactedYCIds(prev => Array.from(new Set([...prev, ...data.contactedYCIds])));
+    if (data.ycStatuses) {
+      setYcStatuses(prev => ({ ...prev, ...data.ycStatuses }));
     }
   };
 
@@ -418,8 +422,8 @@ function App() {
 
           {currentView === 'yc-startups' && (
             <YCList
-              contactedIds={contactedYCIds}
-              onToggleContacted={toggleYCContacted}
+              statuses={ycStatuses}
+              onUpdateStatus={updateYcStatus}
             />
           )}
 

@@ -1,153 +1,127 @@
 import React, { useState, useMemo } from 'react';
-import ycData from '../data/yc_startups.json';
+import startupsData from '../data/yc_startups.json';
 import './YCList.css';
 
-const ITEMS_PER_PAGE = 50;
-
-const YCList = ({ contactedIds, onToggleContacted }) => {
+const YCList = ({ statuses, onUpdateStatus }) => {
     const [searchTerm, setSearchTerm] = useState('');
-    const [currentPage, setCurrentPage] = useState(1);
-    const [filter, setFilter] = useState('All');
+    const [batchFilter, setBatchFilter] = useState('All');
+    const [visibleCount, setVisibleCount] = useState(50);
 
-    const filteredData = useMemo(() => {
-        return ycData.filter(item => {
+    const filteredStartups = useMemo(() => {
+        return startupsData.filter(startup => {
             const matchesSearch =
-                item.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                item.contactName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                item.contactEmail.toLowerCase().includes(searchTerm.toLowerCase());
+                startup.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                startup.contactName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                startup.contactEmail.toLowerCase().includes(searchTerm.toLowerCase());
 
-            const matchesFilter =
-                filter === 'All' ||
-                (filter === 'Contacted' && contactedIds.includes(item.id)) ||
-                (filter === 'Pending' && !contactedIds.includes(item.id));
+            const matchesBatch = batchFilter === 'All' || startup.batch === batchFilter;
 
-            return matchesSearch && matchesFilter;
+            return matchesSearch && matchesBatch;
         });
-    }, [searchTerm, filter, contactedIds]);
+    }, [searchTerm, batchFilter]);
 
-    const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
-    const paginatedData = filteredData.slice(
-        (currentPage - 1) * ITEMS_PER_PAGE,
-        currentPage * ITEMS_PER_PAGE
-    );
+    const batches = useMemo(() => {
+        const uniqueBatches = [...new Set(startupsData.map(s => s.batch))];
+        return ['All', ...uniqueBatches.sort().reverse()];
+    }, []);
 
-    const handleSearchChange = (e) => {
-        setSearchTerm(e.target.value);
-        setCurrentPage(1);
-    };
-
-    const handleFilterChange = (e) => {
-        setFilter(e.target.value);
-        setCurrentPage(1);
+    const copyToClipboard = (text) => {
+        navigator.clipboard.writeText(text);
+        alert('Email copied to clipboard!');
     };
 
     return (
-        <div className="yc-list-page">
+        <div className="yc-hub">
             <header className="page-header">
-                <h1>YC <span className="highlight">Startups</span></h1>
-                <p className="subtitle">Browse {ycData.length} YC startups and track your outreach</p>
+                <h1>YC Startup <span className="highlight">Hub</span></h1>
+                <p className="subtitle">Browse {startupsData.length} YC startups and track your outreach</p>
             </header>
 
-            <div className="list-controls yc-controls">
-                <div className="search-group">
+            <div className="list-controls">
+                <div className="search-group" style={{ flex: 1, marginRight: '1rem' }}>
                     <input
                         type="text"
-                        placeholder="Search company, name or email..."
+                        placeholder="Search company, name, or email..."
                         value={searchTerm}
-                        onChange={handleSearchChange}
+                        onChange={(e) => {
+                            setSearchTerm(e.target.value);
+                            setVisibleCount(50);
+                        }}
+                        style={{ width: '100%' }}
                     />
                 </div>
                 <div className="filter-group">
-                    <select value={filter} onChange={handleFilterChange}>
-                        <option value="All">All Companies</option>
-                        <option value="Contacted">Emailed</option>
-                        <option value="Pending">Not Emailed</option>
+                    <select value={batchFilter} onChange={(e) => {
+                        setBatchFilter(e.target.value);
+                        setVisibleCount(50);
+                    }}>
+                        {batches.map(batch => (
+                            <option key={batch} value={batch}>{batch}</option>
+                        ))}
                     </select>
                 </div>
             </div>
 
-            <div className="yc-table-container glass-panel">
-                <table className="yc-table">
-                    <thead>
-                        <tr>
-                            <th>Company</th>
-                            <th>Batch</th>
-                            <th>Contact</th>
-                            <th>Email</th>
-                            <th>Website</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {paginatedData.length > 0 ? (
-                            paginatedData.map(item => (
-                                <tr key={item.id} className={contactedIds.includes(item.id) ? 'row-contacted' : ''}>
-                                    <td>
-                                        <div className="company-info">
-                                            <span className="company-name">{item.company}</span>
-                                        </div>
-                                    </td>
-                                    <td><span className="batch-tag">{item.batch}</span></td>
-                                    <td>{item.contactName}</td>
-                                    <td>
-                                        {item.contactEmail !== 'TBD' ? (
-                                            <a href={`mailto:${item.contactEmail}`} className="email-link">
-                                                {item.contactEmail}
-                                            </a>
-                                        ) : (
-                                            <span className="text-muted">TBD</span>
-                                        )}
-                                    </td>
-                                    <td>
-                                        {item.website ? (
-                                            <a href={item.website} target="_blank" rel="noopener noreferrer" className="web-link">
-                                                Visit ↗
-                                            </a>
-                                        ) : '-'}
-                                    </td>
-                                    <td>
-                                        <span className={`status-pill ${item.status.toLowerCase()}`}>
-                                            {item.status}
-                                        </span>
-                                    </td>
-                                    <td>
+            <div className="startup-grid">
+                {filteredStartups.slice(0, visibleCount).map(startup => {
+                    const status = statuses[startup.id] || { emailed: false, followup: false };
+
+                    return (
+                        <div key={startup.id} className={`startup-card glass-panel ${status.emailed ? 'emailed' : ''}`}>
+                            <div className="startup-info">
+                                <div className="startup-header">
+                                    <h3>{startup.company}</h3>
+                                    <span className="batch-badge">{startup.batch}</span>
+                                </div>
+                                <p className="contact-name">{startup.contactName}</p>
+                                <div className="email-row">
+                                    <code className="contact-email">{startup.contactEmail}</code>
+                                    {startup.contactEmail !== 'TBD' && (
                                         <button
-                                            className={`contact-btn ${contactedIds.includes(item.id) ? 'active' : ''}`}
-                                            onClick={() => onToggleContacted(item.id)}
+                                            className="copy-btn"
+                                            onClick={() => copyToClipboard(startup.contactEmail)}
+                                            title="Copy Email"
                                         >
-                                            {contactedIds.includes(item.id) ? '✅ Emailed' : '✉️ Mark Sent'}
+                                            📋
                                         </button>
-                                    </td>
-                                </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan="7" className="empty-row">No startups found matching your search.</td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
+                                    )}
+                                </div>
+                                {startup.website && (
+                                    <a href={startup.website} target="_blank" rel="noopener noreferrer" className="website-link">
+                                        View Website ↗
+                                    </a>
+                                )}
+                            </div>
+
+                            <div className="startup-actions">
+                                <button
+                                    className={`action-btn ${status.emailed ? 'active' : ''}`}
+                                    onClick={() => onUpdateStatus(startup.id, 'emailed', !status.emailed)}
+                                >
+                                    {status.emailed ? '✓ Email Sent' : 'Mark Email Sent'}
+                                </button>
+                                <button
+                                    className={`action-btn ${status.followup ? 'active' : ''}`}
+                                    onClick={() => onUpdateStatus(startup.id, 'followup', !status.followup)}
+                                >
+                                    {status.followup ? '✓ Followup Sent' : 'Mark Followup'}
+                                </button>
+                            </div>
+                        </div>
+                    );
+                })}
             </div>
 
-            {totalPages > 1 && (
-                <div className="pagination">
-                    <button
-                        disabled={currentPage === 1}
-                        onClick={() => setCurrentPage(prev => prev - 1)}
-                    >
-                        Previous
-                    </button>
-                    <span className="page-info">
-                        Page {currentPage} of {totalPages}
-                    </span>
-                    <button
-                        disabled={currentPage === totalPages}
-                        onClick={() => setCurrentPage(prev => prev + 1)}
-                    >
-                        Next
+            {visibleCount < filteredStartups.length && (
+                <div className="load-more-container">
+                    <button className="load-more-btn glass-panel" onClick={() => setVisibleCount(prev => prev + 50)}>
+                        Load More Startups ({filteredStartups.length - visibleCount} remaining)
                     </button>
                 </div>
+            )}
+
+            {filteredStartups.length === 0 && (
+                <p className="empty-msg">No startups found matching your search.</p>
             )}
         </div>
     );
